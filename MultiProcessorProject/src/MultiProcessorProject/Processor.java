@@ -15,9 +15,8 @@ public class Processor extends CommonImpl {
 	public Queue queueProcessor = new Queue();
 	public Queue queueL1CtoProcessor = new Queue();
 
-	String testcaseFile = curDir + "/src/CacheProject/testcase.txt";
-
-	Processor() throws IOException {
+	Processor(String input) throws IOException {
+		String testcaseFile = curDir + input;
 		// System.out.println(curDir);
 		BufferedReader reader = new BufferedReader(new FileReader(testcaseFile));
 		String test = null;
