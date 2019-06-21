@@ -11,12 +11,22 @@ import java.io.IOException;
  */
 public class Node {
 
-	// private String pInput = null;;
+	Processor processor;
+	L1Controller l1Controller;
 
-	public Node(String input) throws IOException {
-		// pInput = input;
-		Processor processor = new Processor(input);
-		L1Controller l1Controller = new L1Controller();
+	public Node(String input, int i) throws IOException {
+		processor = new Processor(input);
+		l1Controller = new L1Controller();
+		System.out.println("Node" + i + ": invoked");
 	}
 
+	public boolean areQueuesEmpty() {
+		if (processor.queueProcessor.isEmpty() && l1Controller.queueL1CtoL1D.isEmpty()
+				&& l1Controller.queueL1CtoMemory.isEmpty() && l1Controller.queueMemorytoL1C.isEmpty()
+				&& l1Controller.queueL1CtoProcessor.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

@@ -32,7 +32,7 @@ public class Memory extends CommonImpl {
 			memory[i] = new Block(value);
 		}
 
-		System.out.println("Instructions added to Memory");
+		// System.out.println("Instructions added to Memory");
 
 	}
 }
