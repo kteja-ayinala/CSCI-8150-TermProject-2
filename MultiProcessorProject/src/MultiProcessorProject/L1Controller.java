@@ -47,74 +47,6 @@ public class L1Controller {
 		way3 = new Block[64];
 		way4 = new Block[64];
 
-		// ReadInstruction rdIns0 = new ReadInstruction();
-		// rdIns0.setProcessorInstructionKind(0);
-		// rdIns0.setAddress(formatAddress(3, l1_Tag, l1_Index, l1_Offset));
-		// rdIns0.setByteEnables(4);
-		// rdIns0.setInstructioNum(1);
-		// rdIns0.setCommand("Read 3 4");
-		//
-		// ReadInstruction rdIns1 = new ReadInstruction();
-		// rdIns1.setProcessorInstructionKind(0);
-		// rdIns1.setAddress(formatAddress(4, l1_Tag, l1_Index, l1_Offset));
-		// rdIns1.setByteEnables(4);
-		// rdIns1.setInstructioNum(1);
-		// rdIns1.setCommand("Read 4 4");
-		//
-		// ReadInstruction rdIns2 = new ReadInstruction();
-		// rdIns2.setProcessorInstructionKind(0);
-		// rdIns2.setAddress(formatAddress(10, l1_Tag, l1_Index, l1_Offset));
-		// rdIns2.setByteEnables(4);
-		// rdIns2.setInstructioNum(1);
-		// rdIns2.setCommand("Read 10 4");
-		//
-		// ReadInstruction rdIns3 = new ReadInstruction();
-		// rdIns3.setProcessorInstructionKind(0);
-		// rdIns3.setAddress(formatAddress(25, l1_Tag, l1_Index, l1_Offset));
-		// rdIns3.setByteEnables(4);
-		// rdIns3.setInstructioNum(1);
-		// rdIns3.setCommand("Read 25 4");
-		//
-		// ReadInstruction rdIns4 = new ReadInstruction();
-		// rdIns4.setProcessorInstructionKind(0);
-		// rdIns4.setAddress(formatAddress(50, l1_Tag, l1_Index, l1_Offset));
-		// rdIns4.setByteEnables(4);
-		// rdIns4.setInstructioNum(1);
-		// rdIns4.setCommand("Read 50 4");
-		//
-		// ReadInstruction rdIns5 = new ReadInstruction();
-		// rdIns5.setProcessorInstructionKind(0);
-		// rdIns5.setAddress(formatAddress(100, l1_Tag, l1_Index, l1_Offset));
-		// rdIns5.setByteEnables(4);
-		// rdIns5.setInstructioNum(1);
-		// rdIns5.setCommand("Read 100 4");
-		//
-		// ReadInstruction rdIns6 = new ReadInstruction();
-		// rdIns6.setProcessorInstructionKind(0);
-		// rdIns6.setAddress(formatAddress(200, l1_Tag, l1_Index, l1_Offset));
-		// rdIns6.setByteEnables(4);
-		// rdIns6.setInstructioNum(1);
-		// rdIns6.setCommand("Read 200 4");
-		//
-		// ReadInstruction rdIns7 = new ReadInstruction();
-		// rdIns7.setProcessorInstructionKind(0);
-		// rdIns7.setAddress(formatAddress(400, l1_Tag, l1_Index, l1_Offset));
-		// rdIns7.setByteEnables(4);
-		// rdIns7.setInstructioNum(1);
-		// rdIns7.setCommand("Read 400 4");
-		//
-		// ReadInstruction[] values = new ReadInstruction[8];
-		// values[0] = rdIns0;
-		// values[1] = rdIns1;
-		// values[2] = rdIns2;
-		// values[3] = rdIns3;
-		// values[4] = rdIns4;
-		// values[5] = rdIns5;
-		// values[6] = rdIns6;
-		// values[7] = rdIns7;
-
-		// way1[0].setrIns(values);
-
 		for (int i = 0; i < 64; i++) {
 			way1[i] = new Block();
 			way1[i].setValidBit(0);
@@ -125,8 +57,6 @@ public class L1Controller {
 			way4[i] = new Block();
 			way4[i].setValidBit(0);
 		}
-		// way1[0] = new Block(values);
-		System.out.println("Instructions added to L1 Instruction Cache");
 	}
 
 	public boolean isL1Hit(Address address) {

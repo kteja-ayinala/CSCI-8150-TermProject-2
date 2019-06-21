@@ -17,7 +17,6 @@ public class Node {
 		// pInput = input;
 		Processor processor = new Processor(input);
 		L1Controller l1Controller = new L1Controller();
-		L1Data l1Data = new L1Data();
 	}
 
 }

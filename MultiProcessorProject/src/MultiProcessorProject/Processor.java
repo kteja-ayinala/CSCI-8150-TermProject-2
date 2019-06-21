@@ -30,23 +30,23 @@ public class Processor extends CommonImpl {
 			if (kind.equalsIgnoreCase("Read")) {
 				int instructionKind = 0;
 				String byteEnables = test.split(" ")[2];
-				// ReadInstruction ins = new ReadInstruction();
-				// ins.setCommand(command);
-				// ins.setInstructioNum(instructionNum);
-				// ins.setProcessorInstructionKind(instructionKind);
-				// ins.setAddress(fAddress);
-				// ins.setByteEnables(Integer.parseInt(byteEnables));
-				// queueProcessor.enqueue(ins);
+				 ReadInstruction ins = new ReadInstruction();
+				 ins.setCommand(command);
+				 ins.setInstructioNum(instructionNum);
+				 ins.setProcessorInstructionKind(instructionKind);
+				 ins.setAddress(fAddress);
+				 ins.setByteEnables(Integer.parseInt(byteEnables));
+				 queueProcessor.enqueue(ins);
 			} else if (kind.equalsIgnoreCase("Write")) {
 				int instructionKind = 1;
 				char data = test.split(" ")[2].charAt(0);
-				// WriteInstruction ins = new WriteInstruction();
-				// ins.setCommand(command);
-				// ins.setInstructioNum(instructionNum);
-				// ins.setProcessorInstructionKind(instructionKind);
-				// ins.setAddress(fAddress);
-				// ins.setWriteData(data);
-				// queueProcessor.enqueue(ins);
+				WriteInstruction ins = new WriteInstruction();
+				ins.setCommand(command);
+				ins.setInstructioNum(instructionNum);
+				ins.setProcessorInstructionKind(instructionKind);
+				ins.setAddress(fAddress);
+				ins.setWriteData(data);
+				 queueProcessor.enqueue(ins);
 			} else {
 				System.out.println("Inappropriate instruction format");
 			}
