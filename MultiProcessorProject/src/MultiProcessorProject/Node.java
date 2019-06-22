@@ -22,7 +22,7 @@ public class Node {
 
 	public boolean areQueuesEmpty() {
 		if (processor.queueProcessor.isEmpty() && l1Controller.queueL1CtoL1D.isEmpty()
-				&& l1Controller.queueL1CtoMemory.isEmpty() && l1Controller.queueMemorytoL1C.isEmpty()
+				&& l1Controller.queueL1CtoBusRequest.isEmpty() && l1Controller.queueBustoL1C.isEmpty()
 				&& l1Controller.queueL1CtoProcessor.isEmpty()) {
 			return true;
 		} else {

@@ -13,6 +13,7 @@ import java.io.IOException;
 
 public class Processor extends CommonImpl {
 	public Queue queueProcessor = new Queue();
+	public Queue queueProcessortoL1C = new Queue();
 	public Queue queueL1CtoProcessor = new Queue();
 
 	Processor(String input) throws IOException {

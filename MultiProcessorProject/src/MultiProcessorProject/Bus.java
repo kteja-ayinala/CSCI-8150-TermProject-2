@@ -14,6 +14,7 @@ public class Bus {
 	public Instruction dataIns = null;
 	public Queue queueBusRequest = null;
 	public Queue queueBusResponse = null;
+	public Queue queueBusData = null;
 	public int totalNodes = 3;
 	public boolean isBusBusy = false;
 

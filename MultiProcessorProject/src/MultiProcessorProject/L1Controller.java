@@ -23,9 +23,10 @@ public class L1Controller {
 	Block way4[];
 	public Queue queueProcessortoL1C = new Queue();
 	public Queue queueL1CtoL1D = new Queue();
-	public Queue queueL1CtoMemory = new Queue();
+	public Queue queueL1CtoBusRequest = new Queue();
+	public Queue queueL1CtoBusResponse = new Queue();
 	public Queue queueL1CtoProcessor = new Queue();
-	public Queue queueMemorytoL1C = new Queue();
+	public Queue queueBustoL1C = new Queue();
 	L1Data l1Data;
 	private HashMap<Integer, String> state;
 
