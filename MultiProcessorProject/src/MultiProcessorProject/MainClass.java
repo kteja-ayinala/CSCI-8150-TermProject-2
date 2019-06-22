@@ -4,6 +4,7 @@
 package MultiProcessorProject;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * @author krishnatejaayinala, sindhura
@@ -18,21 +19,29 @@ public class MainClass extends CommonImpl {
 	static Memory memory;
 	static Bus bus;
 	static Queue queueQuantum;
+	// static HashMap<String, Integer> queueQuantum;
+	// static int scheduledNode;
+	// static String scheduledNodeKey ;
 
 	public static void main(String[] args) throws IOException {
 
 		node1 = new Node("/src/testcases/testcasenode1.txt", 1);
-		node2 = new Node("/src/testcases/testcasenode2.txt", 2);
-		node3 = new Node("/src/testcases/testcasenode3.txt", 3);
+		node2 = new Node("/src/testcases/testcasenode3.txt", 2);
+		node3 = new Node("/src/testcases/testcasenode2.txt", 3);
 
 		memory = new Memory();
 		bus = new Bus();
 		// loops to give equal chance for each processor
-		queueQuantum = new Queue(3);
+		// queueQuantum = new HashMap<String, Integer>();
+		// queueQuantum.put("node1", 1);
+		// queueQuantum.put("node2", 2);
+		// queueQuantum.put("node3", 3);
+		queueQuantum = new Queue(64);
 		queueQuantum.enqueueInt(1);
 		queueQuantum.enqueueInt(2);
 		queueQuantum.enqueueInt(3);
-
+		int scheduledNode;
+		// scheduledNodeKey = "node1";
 		do {
 			cycle++;
 			System.out.println("---------cycle:" + cycle + "---------");
@@ -45,15 +54,42 @@ public class MainClass extends CommonImpl {
 			// CPU scheduling alogorithm Round Robin (time slice set equally
 			// among processors - mainly avoids starvation of processors)
 
-		} while (!node1.processor.queueProcessor.isEmpty() || !node2.processor.queueProcessor.isEmpty()
-				|| !node3.processor.queueProcessor.isEmpty());
-		// while (!node1.areQueuesEmpty() || !node2.areQueuesEmpty() ||
-		// !node3.areQueuesEmpty());
+			// scheduledNode = queueQuantum.get(scheduledNodeKey);
+			scheduledNode = queueQuantum.dequeueInt();
+
+			switch (scheduledNode) {
+			case 1:
+				nodeScheduler(node1, 1);
+				queueQuantum.enqueueInt(scheduledNode);
+				break;
+			case 2:
+				nodeScheduler(node2, 2);
+				queueQuantum.enqueueInt(scheduledNode);
+				break;
+			case 3:
+				nodeScheduler(node3, 3);
+				queueQuantum.enqueueInt(scheduledNode);
+				break;
+			default:
+				break;
+
+			}
+
+		} while (!node1.areQueuesEmpty() || !node2.areQueuesEmpty() || !node3.areQueuesEmpty());
 
 	}
 
 	private static void processNodeRequest(Node node, int nodeNum) {
 		int initialCount = 0;
+
+		if (!node.processor.queueL1CtoProcessor.isEmpty()) {
+			char[] data = ((ReadInstruction) instruction).getByteEnableData();
+			String finaldata = String.valueOf(data);
+			System.out.println("!!****************************!!");
+			System.out.println("Result: " + finaldata + " for " + instruction.getCommand());
+			System.out.println("!!****************************!!");
+		}
+
 		if (!node.processor.queueProcessor.isEmpty()) {
 			if (initialCount == 0) {
 				instruction = (Instruction) node.processor.queueProcessor.dequeue();
@@ -87,7 +123,9 @@ public class MainClass extends CommonImpl {
 					System.out.println(block.data);
 					System.out.println("L1D block data updated from main memory: Node - " + nodeNum + " ins: "
 							+ instruction.getCommand());
-					node.l1Controller.setState(instruction.getAddress().getAddress(), "Data");
+					// node.l1Controller.setState(instruction.getAddress().getAddress(),
+					// "Data");
+					node.l1Controller.clear(address);
 				}
 			} else {
 				if (instruction.instructionTransferType == 1) {
@@ -100,9 +138,50 @@ public class MainClass extends CommonImpl {
 					System.out.println(block.data);
 					System.out
 							.println("L1D write Data update: Node - " + nodeNum + " ins: " + instruction.getCommand());
-					node.l1Controller.setState(instruction.getAddress().getAddress(), "Data");
+					// node.l1Controller.setState(instruction.getAddress().getAddress(),
+					// "Data");
+					node.l1Controller.clear(address);
 
 				}
+			}
+		}
+
+		if (!node.l1Controller.l1Data.queueL1DtoL1C.isEmpty()) {
+			instruction = (Instruction) node.l1Controller.l1Data.queueL1DtoL1C.dequeue();
+			int address = instruction.getAddress().getAddress();
+			Address fAddress = formatAddress(address, node.l1Controller.l1_Tag, node.l1Controller.l1_Index,
+					node.l1Controller.l1_Offset);
+			int byteena = ((ReadInstruction) instruction).getByteEnables();
+
+			ReadInstruction rIns = new ReadInstruction();
+			rIns.setByteEnables(byteena);
+			rIns.setAddress(fAddress);
+			rIns.setCommand(instruction.getCommand());
+			rIns.setProcessorInstructionKind(instruction.getProcessorInstructionKind());
+			rIns.setInstructionTransferType(0);
+			if (node.l1Controller.getState(address).equals("Rdwaitd")) {
+				char[] data = new char[byteena];
+				if (byteena != 0) {
+
+					Block block = node.l1Controller.readBlock(fAddress);
+					char[] blockdata = block.getData();
+					for (int i = 0; i < byteena; i++) {
+						data[i] = blockdata[Integer.parseInt(fAddress.getOffset(), 2) + i];
+						// data[i] =
+						// node.l1Controller.readBlock(fAddress).getData()[Integer.parseInt(fAddress.getOffset(),
+						// 2)
+						// + i];
+					}
+					rIns.setByteEnableData(data);
+				} else {
+					char returnData = instruction.getTransferBlock().getData()[Integer.parseInt(fAddress.getOffset(),
+							2)];
+					rIns.setSingleCharData(returnData);
+				}
+				node.processor.queueL1CtoProcessor.enqueue(rIns);
+				System.out.println("L1C to Processor: Data sent after hit,  Node - " + nodeNum + " ins: "
+						+ instruction.getCommand());
+				node.l1Controller.clear(address);
 			}
 		}
 
@@ -178,12 +257,23 @@ public class MainClass extends CommonImpl {
 					}
 				}
 			}
-
 		}
 
 		if (!node.processor.queueProcessortoL1C.isEmpty()) {
 			instruction = (Instruction) node.processor.queueProcessortoL1C.dequeue();
 			node.l1Controller.queueProcessortoL1C.enqueue(instruction);
 		}
+
+	}
+
+	private static void nodeScheduler(Node node, int nodeNum) {
+		if (!node.l1Controller.queueL1CtoBusRequest.isEmpty() || !node.l1Controller.queueL1CtoBusResponse.isEmpty()) {
+			if (!node.l1Controller.queueL1CtoBusRequest.isEmpty()) {
+				instruction = (Instruction) node.l1Controller.queueL1CtoBusRequest.dequeue();
+				System.out.println("Bus Request: Node - " + nodeNum + " ins:" + instruction.getCommand());
+				bus.queueBusRequest.enqueue(instruction);
+			}
+		}
+
 	}
 }

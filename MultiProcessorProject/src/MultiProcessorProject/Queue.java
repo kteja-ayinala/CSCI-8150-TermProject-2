@@ -75,7 +75,7 @@ public class Queue {
 		if (isEmpty()) {
 			System.out.println("UnderFlow");
 		}
-		dequedObj = intArray[front];
+		dequedEle = intArray[front];
 		// System.out.println("Removing " + arr[front]);
 		front = (front + 1);
 		count--;
