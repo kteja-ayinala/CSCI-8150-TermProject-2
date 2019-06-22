@@ -26,8 +26,8 @@ public class MainClass extends CommonImpl {
 	public static void main(String[] args) throws IOException {
 
 		node1 = new Node("/src/testcases/testcasenode1.txt", 1);
-		node2 = new Node("/src/testcases/testcasenode3.txt", 2);
-		node3 = new Node("/src/testcases/testcasenode2.txt", 3);
+		node2 = new Node("/src/testcases/testcasenode2.txt", 2);
+		node3 = new Node("/src/testcases/testcasenode3.txt", 3);
 
 		memory = new Memory();
 		bus = new Bus();
@@ -54,26 +54,81 @@ public class MainClass extends CommonImpl {
 			// CPU scheduling alogorithm Round Robin (time slice set equally
 			// among processors - mainly avoids starvation of processors)
 
+			// if (!bus.queueBusRequest.isEmpty() ||
+			// !bus.queueBusResponse.isEmpty() ) {}
 			// scheduledNode = queueQuantum.get(scheduledNodeKey);
-			scheduledNode = queueQuantum.dequeueInt();
 
-			switch (scheduledNode) {
-			case 1:
-				nodeScheduler(node1, 1);
-				queueQuantum.enqueueInt(scheduledNode);
-				break;
-			case 2:
-				nodeScheduler(node2, 2);
-				queueQuantum.enqueueInt(scheduledNode);
-				break;
-			case 3:
-				nodeScheduler(node3, 3);
-				queueQuantum.enqueueInt(scheduledNode);
-				break;
-			default:
-				break;
+			if (!bus.queueBusRequest.isEmpty()) {
+				instruction = (Instruction) bus.queueBusRequest.dequeue();
+				System.out.println(
+						"Bus Request: Node - " + instruction.getInstructionNode() + " ins:" + instruction.getCommand());
+				busProcessing(instruction);
+			}
+			scheduledNode = queueQuantum.dequeueInt();
+			queueQuantum.enqueueInt(scheduledNode);
+
+			if (scheduledNode == 1) {
+				if (!node1.l1Controller.queueL1CtoBusRequest.isEmpty()
+						|| !node1.l1Controller.queueL1CtoBusResponse.isEmpty()
+						|| !node1.l1Controller.queueBustoL1C.isEmpty()) {
+					nodeScheduler(node1, 1);
+					// queueQuantum.enqueueInt(scheduledNode);
+				} else {
+					// queueQuantum.enqueueInt(scheduledNode);
+					scheduledNode = 2;
+				}
 
 			}
+			if (scheduledNode == 2) {
+				if (!node2.l1Controller.queueL1CtoBusRequest.isEmpty()
+						|| !node2.l1Controller.queueL1CtoBusResponse.isEmpty()
+						|| !node2.l1Controller.queueBustoL1C.isEmpty()) {
+					nodeScheduler(node2, 2);
+					// queueQuantum.enqueueInt(scheduledNode);
+				} else {
+					// queueQuantum.enqueueInt(scheduledNode);
+					scheduledNode = 3;
+
+				}
+			}
+			if (scheduledNode == 3) {
+				if (!node3.l1Controller.queueL1CtoBusRequest.isEmpty()
+						|| !node3.l1Controller.queueL1CtoBusResponse.isEmpty()
+						|| !node3.l1Controller.queueBustoL1C.isEmpty()) {
+					nodeScheduler(node3, 3);
+					// queueQuantum.enqueueInt(scheduledNode);
+				} else {
+					// queueQuantum.enqueueInt(scheduledNode);
+					scheduledNode = 1;
+				}
+			}
+
+			// switch (scheduledNode) {
+			// case 1:
+			// if (!node1.l1Controller.queueL1CtoBusRequest.isEmpty()
+			// || !node1.l1Controller.queueL1CtoBusResponse.isEmpty()
+			// || !node1.l1Controller.queueBustoL1C.isEmpty())
+			// nodeScheduler(node1, 1);
+			// queueQuantum.enqueueInt(scheduledNode);
+			// break;
+			// case 2:
+			// if (!node2.l1Controller.queueL1CtoBusRequest.isEmpty()
+			// || !node2.l1Controller.queueL1CtoBusResponse.isEmpty()
+			// || !node2.l1Controller.queueBustoL1C.isEmpty())
+			// nodeScheduler(node2, 2);
+			// queueQuantum.enqueueInt(scheduledNode);
+			// break;
+			// case 3:
+			// if (!node3.l1Controller.queueL1CtoBusRequest.isEmpty()
+			// || !node3.l1Controller.queueL1CtoBusResponse.isEmpty()
+			// || !node3.l1Controller.queueBustoL1C.isEmpty())
+			// nodeScheduler(node3, 3);
+			// queueQuantum.enqueueInt(scheduledNode);
+			// break;
+			// default:
+			// break;
+
+			// }
 
 		} while (!node1.areQueuesEmpty() || !node2.areQueuesEmpty() || !node3.areQueuesEmpty());
 
@@ -99,6 +154,13 @@ public class MainClass extends CommonImpl {
 			}
 		}
 
+		// if (!node.l1Controller.queueL1CtoBusRequest.isEmpty()) {
+		// instruction = (Instruction)
+		// node.l1Controller.queueL1CtoBusRequest.dequeue();
+		// bus.queueBusRequest.enqueue(instruction);
+		// System.out.println("Bus request Queue updated: Node - " + nodeNum + "
+		// ins:" + instruction.getCommand());
+		// }
 		if (!node.l1Controller.queueL1CtoL1D.isEmpty()) {
 			instruction = (Instruction) node.processor.queueProcessor.dequeue();
 			int address = instruction.getAddress().getAddress();
@@ -267,13 +329,61 @@ public class MainClass extends CommonImpl {
 	}
 
 	private static void nodeScheduler(Node node, int nodeNum) {
-		if (!node.l1Controller.queueL1CtoBusRequest.isEmpty() || !node.l1Controller.queueL1CtoBusResponse.isEmpty()) {
-			if (!node.l1Controller.queueL1CtoBusRequest.isEmpty()) {
-				instruction = (Instruction) node.l1Controller.queueL1CtoBusRequest.dequeue();
-				System.out.println("Bus Request: Node - " + nodeNum + " ins:" + instruction.getCommand());
-				bus.queueBusRequest.enqueue(instruction);
-			}
+		instruction = (Instruction) node.l1Controller.queueL1CtoBusRequest.dequeue();
+		int address = instruction.getAddress().getAddress();
+		if (node.l1Controller.getState(address).equals("RdBuswaitd")
+				|| node.l1Controller.getState(address).equals("WrBuswaitd")) {
+			instruction.setInstructionNode(nodeNum);
+			bus.queueBusRequest.enqueue(instruction);
 		}
 
 	}
+
+	private static void busProcessing(Instruction instruction) {
+		// instruction = (Instruction) bus.queueBusRequest.dequeue();
+		Address address = instruction.getAddress();
+		int addr = instruction.getAddress().getAddress();
+		int block = Integer.parseInt(address.getIndex());
+		if (instruction.getProcessorInstructionKind() == 0) {
+			instruction.setBusRequest("BusRead " + addr);
+		} else {
+			instruction.setBusRequest("BusReadEx " + addr);
+		}
+		checkPresence(instruction, block);
+	}
+
+	private static void checkPresence(Instruction instruction, int block) {
+		if (instruction.getInstructionNode() == 1) {
+			System.out.println(instruction.getBusRequest() + "activated on bus, node2,3 notified: Node - "
+					+ instruction.getInstructionNode() + " ins:" + instruction.getCommand());
+			if (node2.l1Controller.isL1Hit(instruction.address)) {
+
+			} else if (node3.l1Controller.isL1Hit(instruction.address)) {
+
+			} else {
+				// send invalid
+			}
+		} else if (instruction.getInstructionNode() == 2) {
+			System.out.println(instruction.getBusRequest() + " activated on bus, node1,3 notified: Node - "
+					+ instruction.getInstructionNode() + " ins:" + instruction.getCommand());
+			if (node1.l1Controller.isL1Hit(instruction.address)) {
+
+			} else if (node3.l1Controller.isL1Hit(instruction.address)) {
+
+			} else {
+				// send invalid
+			}
+		} else if (instruction.getInstructionNode() == 3) {
+			System.out.println(instruction.getBusRequest() + " activated on bus, node1,2 notified: Node - "
+					+ instruction.getInstructionNode() + " ins:" + instruction.getCommand());
+			if (node1.l1Controller.isL1Hit(instruction.address)) {
+
+			} else if (node2.l1Controller.isL1Hit(instruction.address)) {
+
+			} else {
+				// send invalid
+			}
+		}
+	}
+
 }

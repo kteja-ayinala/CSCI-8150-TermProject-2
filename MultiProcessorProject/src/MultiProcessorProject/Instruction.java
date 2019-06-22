@@ -16,6 +16,24 @@ public class Instruction {
 	// String bAddress;
 	Block transferBlock;
 	int instructionTransferType;
+	String busRequest;
+	int instructionNode;
+
+	public int getInstructionNode() {
+		return instructionNode;
+	}
+
+	public void setInstructionNode(int instructionNode) {
+		this.instructionNode = instructionNode;
+	}
+
+	public String getBusRequest() {
+		return busRequest;
+	}
+
+	public void setBusRequest(String busRequest) {
+		this.busRequest = busRequest;
+	}
 
 	public int getInstructionTransferType() {
 		return instructionTransferType;
