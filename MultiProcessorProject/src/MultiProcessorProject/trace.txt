@@ -1,0 +1,98 @@
+r enqued
+w enqued
+Node1: invoked
+r enqued
+w enqued
+Node2: invoked
+Node3: invoked
+---------cycle:1---------
+P to L1C:  Node - 1 ins:R 100 4
+P to L1C:  Node - 2 ins:R 100 4
+Round robin scheduling, available for node1
+No bus request, assigning other processor
+Round robin scheduling, available for node2
+No bus request, assigning other processor
+Round robin scheduling, available for node3
+---------cycle:2---------
+P to L1C:  Node - 1 ins:W 100 A
+L1C main state: missi, state assign: RdBuswaitd R 100 4
+P to L1C:  Node - 2 ins:W 100 A
+L1C main state: missi, state assign: RdBuswaitd R 100 4
+Round robin scheduling, available for node2
+L1C to Bus Request: Node - 2 ins:R 100 4
+---------cycle:3---------
+L1C main state: missi, state assign: WrBuswaitd W 100 A
+L1C main state: missi, state assign: WrBuswaitd W 100 A
+BusRead 100 activated on bus, node1,3 verify: Node - 2 ins:R 100 4
+Round robin scheduling, available for node3
+---------cycle:4---------
+Acknowledgements received as both Invalid for Node - 2 ins:R 100 4
+Bus to Memory: Node - 2 ins:R 100 4
+Round robin scheduling, available for node1
+L1C to Bus Request: Node - 1 ins:R 100 4
+---------cycle:5---------
+Bus Response: Data Block R 100 4
+Round robin scheduling, available for node2
+L1C to Bus Request: Node - 2 ins:W 100 A
+---------cycle:6---------
+BusResponse to  L1C -node 2 MESI state: E  ins:R 100 4
+Round robin scheduling, available for node3
+---------cycle:7---------
+L1C to L1D: Node - 2 ins: R 100 4
+L1C to Processor: Node - 2 ins: R 100 4
+Round robin scheduling, available for node1
+L1C to Bus Request: Node - 1 ins:W 100 A
+---------cycle:8---------
+ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF
+L1D block data updated from main memory: Node - 2 ins: R 100 4
+!!****************************!!
+Result: EFGH for R 100 4
+!!****************************!!
+BusRead 100 activated on bus, node2,3 verify: Node - 1 ins:R 100 4
+BusResponse to  L1C - node: 1, 2 MESI state: S  ins:R 100 4
+hit in  node2 L1
+Round robin scheduling, available for node2
+No bus request, assigning other processor
+Round robin scheduling, available for node3
+---------cycle:9---------
+L1C to L1D: Node - 1 ins: R 100 4
+L1C to Processor: Node - 1 ins: R 100 4
+BusReadEx 100 activated on bus, node1,3 verify: Node - 2 ins:W 100 A
+Hit in own cache- node: 2 MESI state: M  ins:W 100 A
+Invalid sent  MESI state: I  ins:W 100 A
+Round robin scheduling, available for node3
+---------cycle:10---------
+ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF
+L1D block data updated from main memory: Node - 1 ins: R 100 4
+!!****************************!!
+Result: EFGH for R 100 4
+!!****************************!!
+L1C to L1D:  state set to: Wrwait1dW 100 A
+BusReadEx 100 activated on bus, node2,3 verify: Node - 1 ins:W 100 A
+hit in  node2 L1
+Write back the cache line
+Round robin scheduling, available for node1
+No bus request, assigning other processor
+Round robin scheduling, available for node2
+No bus request, assigning other processor
+Round robin scheduling, available for node3
+---------cycle:11---------
+ABCDAFGHIJKLMNOPQRSTUVWXYZABCDEF
+L1D write Data update: Node - 2 ins: W 100 A
+BusResponse to  L1C -node 1 MESI state: E  ins:W 100 A
+ABCDAFGHIJKLMNOPQRSTUVWXYZABCDEF
+Memory data updated Node - 2 ins:W 100 A
+Round robin scheduling, available for node2
+No bus request, assigning other processor
+Round robin scheduling, available for node3
+---------cycle:12---------
+L1C to L1D:  state set to: Wrwait1dW 100 A
+Round robin scheduling, available for node3
+---------cycle:13---------
+ABCDAFGHIJKLMNOPQRSTUVWXYZABCDEF
+L1D write Data update: Node - 1 ins: W 100 A
+Round robin scheduling, available for node1
+No bus request, assigning other processor
+Round robin scheduling, available for node2
+No bus request, assigning other processor
+Round robin scheduling, available for node3
