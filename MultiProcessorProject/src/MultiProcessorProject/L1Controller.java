@@ -156,6 +156,24 @@ public class L1Controller {
 		return block;
 	}
 
+	public void l1delete(Address fAddress) {
+		int tag = Integer.parseInt(fAddress.getTag(), 2);
+		int index = Integer.parseInt(fAddress.getIndex(), 2);
+
+		if (l1Data.way1[index].getTag() == tag) {
+			l1Data.way1[index].setValidBit(0);
+		} else if (l1Data.way2[index].getTag() == tag) {
+			l1Data.way2[index].setValidBit(0);
+			;
+		} else if (l1Data.way3[index].getTag() == tag) {
+			l1Data.way3[index].setValidBit(0);
+			;
+		} else if (l1Data.way4[index].getTag() == tag) {
+			l1Data.way4[index].setValidBit(0);
+			;
+		}
+	}
+
 	public void l1write(Block transferBlock, Address fAddress) {
 		int index = Integer.parseInt(fAddress.getIndex(), 2);
 		int tag = Integer.parseInt(fAddress.getTag(), 2);
