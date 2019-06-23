@@ -17,10 +17,12 @@ public class L1Controller {
 	int l1_SetCount;
 	int l1_BlockSize;
 	int l1_CpuBits;
-	Block way1[];
-	Block way2[];
-	Block way3[];
-	Block way4[];
+	char MESI;
+
+	// Block way1[];
+	// Block way2[];
+	// Block way3[];
+	// Block way4[];
 	public Queue queueProcessortoL1C = new Queue();
 	public Queue queueL1CtoL1D = new Queue();
 	public Queue queueL1CtoBusRequest = new Queue();
@@ -43,21 +45,21 @@ public class L1Controller {
 		l1Data = new L1Data();
 		state = new HashMap<>();
 		// L1 Instruction Cache
-		way1 = new Block[64];
-		way2 = new Block[64];
-		way3 = new Block[64];
-		way4 = new Block[64];
+		// way1 = new Block[64];
+		// way2 = new Block[64];
+		// way3 = new Block[64];
+		// way4 = new Block[64];
 
-		for (int i = 0; i < 64; i++) {
-			way1[i] = new Block();
-			way1[i].setValidBit(0);
-			way2[i] = new Block();
-			way2[i].setValidBit(0);
-			way3[i] = new Block();
-			way3[i].setValidBit(0);
-			way4[i] = new Block();
-			way4[i].setValidBit(0);
-		}
+		// for (int i = 0; i < 64; i++) {
+		// way1[i] = new Block();
+		// way1[i].setValidBit(0);
+		// way2[i] = new Block();
+		// way2[i].setValidBit(0);
+		// way3[i] = new Block();
+		// way3[i].setValidBit(0);
+		// way4[i] = new Block();
+		// way4[i].setValidBit(0);
+		// }
 	}
 
 	public boolean isL1Hit(Address address) {
@@ -269,4 +271,11 @@ public class L1Controller {
 		state.remove(address);
 	}
 
+	public char getMESI() {
+		return MESI;
+	}
+
+	public void setMESI(char mESI) {
+		MESI = mESI;
+	}
 }

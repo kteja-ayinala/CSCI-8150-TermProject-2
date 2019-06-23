@@ -12,8 +12,9 @@ public class Memory extends CommonImpl {
 	int memory_BlockCount;
 	int memory_BlockSize;
 	Block[] memory;
-	public Queue queueMemorytoL2C = new Queue();
-	public Queue queueL2CtoMemory = new Queue();
+	public Queue queueMemorytoBus = new Queue();
+	public Queue queueBustoMemory = new Queue();
+//	public Queue queueL2CtoMemory = new Queue();
 
 	Memory() {
 		memory_Tag = 0;

@@ -33,14 +33,14 @@ public class Block {
 		data = mdata.clone();
 	}
 
-//	public Block(ReadInstruction mdata[]) {
-//		validBit = 1;
-//		dirtyBit = 0;
-//		tag = 0;
-//		offset = 0;
-//		rIns = new ReadInstruction[8];
-//		rIns = mdata;
-//	}
+	// public Block(ReadInstruction mdata[]) {
+	// validBit = 1;
+	// dirtyBit = 0;
+	// tag = 0;
+	// offset = 0;
+	// rIns = new ReadInstruction[8];
+	// rIns = mdata;
+	// }
 
 	public Block(char mdata[], int index, int cycle) throws InterruptedException {
 		validBit = 1;
@@ -112,21 +112,21 @@ public class Block {
 		this.setDirtyBit(1);
 	}
 
-//	public ReadInstruction[] getrIns() {
-//		return rIns;
-//	}
-//
-//	public void setrIns(ReadInstruction[] rIns) {
-//		this.rIns = rIns;
-//	}
-//
-//	public WriteInstruction[] getwIns() {
-//		return wIns;
-//	}
-//
-//	public void setwIns(WriteInstruction[] wIns) {
-//		this.wIns = wIns;
-//	}
+	// public ReadInstruction[] getrIns() {
+	// return rIns;
+	// }
+	//
+	// public void setrIns(ReadInstruction[] rIns) {
+	// this.rIns = rIns;
+	// }
+	//
+	// public WriteInstruction[] getwIns() {
+	// return wIns;
+	// }
+	//
+	// public void setwIns(WriteInstruction[] wIns) {
+	// this.wIns = wIns;
+	// }
 
 	public int getBlockAddress() {
 		return blockAddress;
@@ -135,7 +135,7 @@ public class Block {
 	public void setBlockAddress(int blockAddress) {
 		this.blockAddress = blockAddress;
 	}
-	
+
 	public int getLru() {
 		return lru;
 	}
@@ -144,5 +144,4 @@ public class Block {
 		this.lru = lru;
 	}
 
-	
 }

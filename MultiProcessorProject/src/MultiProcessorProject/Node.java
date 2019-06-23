@@ -25,8 +25,7 @@ public class Node {
 	public boolean areQueuesEmpty() {
 		if (processor.queueProcessor.isEmpty() && l1Controller.queueL1CtoL1D.isEmpty()
 				&& l1Controller.queueL1CtoBusRequest.isEmpty() && l1Controller.queueBustoL1C.isEmpty()
-				&& l1Controller.queueL1CtoProcessor.isEmpty() && l1Controller.queueProcessortoL1C.isEmpty()
-				&& MainClass.bus.queueBusRequest.isEmpty()) {
+				&& l1Controller.queueL1CtoProcessor.isEmpty() && l1Controller.queueProcessortoL1C.isEmpty()) {
 			return true;
 		}
 		return false;

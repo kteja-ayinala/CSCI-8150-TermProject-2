@@ -17,6 +17,7 @@ public class Queue {
 	private int count; // current size of the queue
 	private Object arr[]; // array to store queue elements
 	private int intArray[];
+	private String[] strArray;
 
 	Queue() {
 		arr = new Object[64];
@@ -25,13 +26,21 @@ public class Queue {
 		rear = -1;
 		count = 0;
 	}
-	
-	Queue(int size){
+
+	Queue(int size) {
 		capacity = 64;
 		front = 0;
 		rear = -1;
 		count = 0;
 		intArray = new int[size];
+	}
+
+	Queue(int size, String name) {
+		capacity = 64;
+		front = 0;
+		rear = -1;
+		count = 0;
+		strArray = new String[size];
 	}
 
 	Object dequedObj = null;
@@ -66,7 +75,7 @@ public class Queue {
 		intArray[rear] = item;
 		count++;
 	}
-	
+
 	int dequedEle = 0;
 
 	public int dequeueInt() {
@@ -81,7 +90,31 @@ public class Queue {
 		count--;
 		return dequedEle;
 	}
-	
+
+	public void enqueueStr(String item) {
+		// check for queue overflow
+		if (isFull()) {
+		}
+		rear = (rear + 1);
+		strArray[rear] = item;
+		count++;
+	}
+
+	String dequedStr = null;
+
+	public String dequeueStr() {
+
+		// check for queue underflow
+		if (isEmpty()) {
+			System.out.println("UnderFlow");
+		}
+		dequedStr = strArray[front];
+		// System.out.println("Removing " + arr[front]);
+		front = (front + 1);
+		count--;
+		return dequedStr;
+	}
+
 	public int size() {
 		return count;
 	}
