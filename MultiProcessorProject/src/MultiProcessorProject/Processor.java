@@ -37,6 +37,7 @@ public class Processor extends CommonImpl {
 				ins.setProcessorInstructionKind(instructionKind);
 				ins.setAddress(fAddress);
 				ins.setByteEnables(Integer.parseInt(byteEnables));
+				ins.getInstructionNode();
 				queueProcessor.enqueue(ins);
 				System.out.println("r enqued");
 			} else if (kind.equalsIgnoreCase("W")) {

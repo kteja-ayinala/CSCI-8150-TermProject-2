@@ -70,6 +70,37 @@ public class MainClass extends CommonImpl {
 			// if (acknowlegmentEntry)
 			// System.out.println("Have some values");
 			// }
+			if (!bus.queueBusResponse.isEmpty()) {
+				instruction = (Instruction) bus.queueBusResponse.dequeue();
+				int address = instruction.getAddress().getAddress();
+				// Address fAddress = formatAddress(address,
+				// node1.l1Controller.l1_Tag, node1.l1Controller.l1_Index,
+				// node1.l1Controller.l1_Offset);
+
+				if (instruction.getInstructionNode() == 1) {
+					node1.l1Controller.queueBustoL1C.enqueue(instruction);
+					node1.l1Controller.setMESI('E');
+					System.out.println("BusResponse to  L1C - " + instruction.getInstructionNode() + " MESI state: E "
+							+ " ins:" + instruction.getCommand());
+					checkifStalled(instruction);
+					// bus.clear(address);
+				} else if (instruction.getInstructionNode() == 2) {
+					node2.l1Controller.queueBustoL1C.enqueue(instruction);
+					node2.l1Controller.setMESI('E');
+					System.out.println("BusResponse to  L1C - " + instruction.getInstructionNode() + " MESI state: E "
+							+ " ins:" + instruction.getCommand());
+					checkifStalled(instruction);
+					// bus.clear(address);
+				} else if (instruction.getInstructionNode() == 3) {
+					node3.l1Controller.queueBustoL1C.enqueue(instruction);
+					node3.l1Controller.setMESI('E');
+					System.out.println("BusResponse to  L1C - " + instruction.getInstructionNode() + " MESI state: E "
+							+ " ins:" + instruction.getCommand());
+					checkifStalled(instruction);
+					// bus.clear(address);
+				}
+			}
+
 			Block memBlock;
 			if (!memory.queueBustoMemory.isEmpty()) {
 				instruction = (Instruction) memory.queueBustoMemory.dequeue();
@@ -87,7 +118,7 @@ public class MainClass extends CommonImpl {
 					rIns.setByteEnables(((ReadInstruction) instruction).getByteEnables());
 					rIns.setTransferBlock(memBlock);
 					rIns.setProcessorInstructionKind(instruction.getProcessorInstructionKind());
-					rIns.setInstructioNum(instruction.getInstructioNum());
+					rIns.setInstructionNode(instruction.getInstructionNode());
 					rIns.setProcessorInstructionKind(instruction.getProcessorInstructionKind());
 					rIns.setInstructionTransferType(0);
 					rIns.setAddress(fAddress);
@@ -111,13 +142,38 @@ public class MainClass extends CommonImpl {
 			if (!bus.queueAckFromPeers.isEmpty()) {
 				if (bus.queueAckFromPeers.dequeueStr().equals("Invalid")) {
 					instruction = (Instruction) bus.queueBustoMemory.dequeue();
-					System.out.println("Acknowledgements received as Invalid from Node - "
+					System.out.println("Acknowledgements received as both Invalid for Node - "
 							+ instruction.getInstructionNode() + " ins:" + instruction.getCommand());
 					System.out.println("Bus to Memory: Node - " + instruction.getInstructionNode() + " ins:"
 							+ instruction.getCommand());
 					memory.queueBustoMemory.enqueue(instruction);
 				}
 			}
+
+			// if (!bus.queueBusRequestStalled.isEmpty()) {
+			// instruction = (Instruction) bus.queueBusRequestStalled.dequeue();
+			// int address = instruction.getAddress().getAddress();
+			// if (bus.getState(address) == null ||
+			// !bus.getState(address).equals("Stall")) {
+			// System.out.println("L1C to Bus Request: Node - " +
+			// instruction.getInstructionNode() + " ins:"
+			// + instruction.getCommand());
+			// busProcessing(instruction);
+			// bus.setState(address, "Stall");
+			// } else {
+			// if (instruction.processorInstructionKind == 0) {
+			// System.out.println("BusRead Request stalled: Node - " +
+			// instruction.getInstructionNode()
+			// + " ins:" + instruction.getCommand());
+			// bus.queueBusRequestStalled.enqueue(instruction);
+			// } else {
+			// System.out.println("BusReadEx Request stalled: Node - " +
+			// instruction.getInstructionNode()
+			// + " ins:" + instruction.getCommand());
+			// bus.queueBusRequestStalled.enqueue(instruction);
+			// }
+			// }
+			// }
 
 			if (!bus.queueBusRequest.isEmpty()) {
 				instruction = (Instruction) bus.queueBusRequest.dequeue();
@@ -210,10 +266,25 @@ public class MainClass extends CommonImpl {
 
 	}
 
+	private static void checkifStalled(Instruction instruction) {
+		int address = instruction.getAddress().getAddress();
+		int nodeNum = instruction.getInstructionNode();
+		if (!bus.queueBusRequestStalled.isEmpty()) {
+			instruction = (Instruction) bus.queueBusRequestStalled.dequeue();
+			int sNode = instruction.getInstructionNode();
+			int sAddress = instruction.getAddress().getAddress();
+			if (sAddress == address) {
+
+			}
+		}
+
+	}
+
 	private static void processNodeRequest(Node node, int nodeNum) {
 		int initialCount = 0;
 
 		if (!node.processor.queueL1CtoProcessor.isEmpty()) {
+			instruction = (Instruction) node.processor.queueL1CtoProcessor.dequeue();
 			char[] data = ((ReadInstruction) instruction).getByteEnableData();
 			String finaldata = String.valueOf(data);
 			System.out.println("!!****************************!!");
@@ -230,6 +301,78 @@ public class MainClass extends CommonImpl {
 			}
 		}
 
+		if (!node.l1Controller.queueBustoL1C.isEmpty()) {
+			instruction = (Instruction) node.l1Controller.queueBustoL1C.dequeue();
+			int byteena = ((ReadInstruction) instruction).getByteEnables();
+			int address = instruction.getAddress().getAddress();
+			Address fAddress = formatAddress(address, node.l1Controller.l1_Tag, node.l1Controller.l1_Index,
+					node.l1Controller.l1_Offset);
+
+			if (instruction.getProcessorInstructionKind() == 0) {
+				if (instruction.getInstructionTransferType() == 0) {
+					WriteInstruction wIns = new WriteInstruction();
+					wIns.setTransferBlock(instruction.getTransferBlock());
+					wIns.setAddress(fAddress);
+					wIns.setCommand(instruction.getCommand());
+					wIns.setProcessorInstructionKind(instruction.getProcessorInstructionKind());
+					wIns.setInstructionNode(instruction.getInstructioNum());
+					wIns.setInstructionTransferType(1);
+					// wIns.setWriteData((ReadInstruction)instruction.getTransferBlock());
+					node.l1Controller.l1Data.queueL1CtoL1D.enqueue(wIns);
+					System.out.println("L1C to L1D: " + instruction.getCommand());
+				}
+				ReadInstruction rIns = new ReadInstruction();
+				rIns.setByteEnables(byteena);
+				rIns.setAddress(fAddress);
+				rIns.setCommand(instruction.getCommand());
+				rIns.setProcessorInstructionKind(instruction.getProcessorInstructionKind());
+				rIns.setInstructionTransferType(0);
+				if (byteena != 0) {
+					char[] data = new char[byteena];
+					Block block = instruction.getTransferBlock();
+					for (int i = 0; i < byteena; i++) {
+						data[i] = block.getData()[Integer.parseInt(fAddress.getOffset(), 2) + i];
+					}
+					rIns.setByteEnableData(data);
+				} else {
+					char returnData = instruction.getTransferBlock().getData()[Integer.parseInt(fAddress.getOffset(),
+							2)];
+					rIns.setSingleCharData(returnData);
+				}
+				// l1Controller.setState(instruction.getAddress().getAddress(),
+				// "Rdwaitd");
+				node.processor.queueL1CtoProcessor.enqueue(rIns);
+				System.out.println("L1C to Processor: " + instruction.getCommand());
+
+				// }F
+			} else {// Write
+				if (node.l1Controller.isValid(Integer.parseInt(fAddress.getIndex(), 2),
+						Integer.parseInt(fAddress.getTag(), 2)) == 1) {
+					if (node.l1Controller.isDirty(Integer.parseInt(fAddress.getIndex(), 2),
+							Integer.parseInt(fAddress.getTag(), 2)) == 1) {
+						Block block = node.l1Controller.readBlock(fAddress);
+						node.l1Controller.setDirty(Integer.parseInt(fAddress.getIndex(), 2),
+								Integer.parseInt(fAddress.getTag(), 2), 0);
+						L1Controller.setvalid(Integer.parseInt(fAddress.getIndex(), 2),
+								Integer.parseInt(fAddress.getTag(), 2), 0);
+
+					}
+
+				}
+				WriteInstruction wIns = new WriteInstruction();
+				wIns.setTransferBlock(instruction.getTransferBlock());
+				wIns.setAddress(fAddress);
+				wIns.setCommand(instruction.getCommand());
+				wIns.setProcessorInstructionKind(instruction.getProcessorInstructionKind());
+				wIns.setInstructionTransferType(1);
+				wIns.setWriteData(instruction.getCommand().toString().split(" ")[2].charAt(0));
+				node.l1Controller.l1Data.queueL1CtoL1D.enqueue(wIns);
+				System.out.println("L1C to L1D:  state set to: Wrwait1d" + instruction.getCommand());
+				node.l1Controller.setState(instruction.getAddress().getAddress(), "Wrwait1d");
+
+			}
+		}
+
 		// if (!node.l1Controller.queueL1CtoBusRequest.isEmpty()) {
 		// instruction = (Instruction)
 		// node.l1Controller.queueL1CtoBusRequest.dequeue();
@@ -237,8 +380,8 @@ public class MainClass extends CommonImpl {
 		// System.out.println("Bus request Queue updated: Node - " + nodeNum + "
 		// ins:" + instruction.getCommand());
 		// }
-		if (!node.l1Controller.queueL1CtoL1D.isEmpty()) {
-			instruction = (Instruction) node.processor.queueProcessor.dequeue();
+		if (!node.l1Controller.l1Data.queueL1CtoL1D.isEmpty()) {
+			instruction = (Instruction) node.l1Controller.l1Data.queueL1CtoL1D.dequeue();
 			int address = instruction.getAddress().getAddress();
 
 			Address fAddress = formatAddress(address, node.l1Controller.l1_Tag, node.l1Controller.l1_Index,
@@ -264,6 +407,7 @@ public class MainClass extends CommonImpl {
 					// node.l1Controller.setState(instruction.getAddress().getAddress(),
 					// "Data");
 					node.l1Controller.clear(address);
+					bus.clear(address);
 				}
 			} else {
 				if (instruction.instructionTransferType == 1) {
@@ -279,7 +423,7 @@ public class MainClass extends CommonImpl {
 					// node.l1Controller.setState(instruction.getAddress().getAddress(),
 					// "Data");
 					node.l1Controller.clear(address);
-
+					bus.clear(address);
 				}
 			}
 		}
@@ -403,6 +547,7 @@ public class MainClass extends CommonImpl {
 						rIns.setSingleCharData(((WriteInstruction) instruction).getWriteData());
 						rIns.setProcessorInstructionKind(instruction.getProcessorInstructionKind());
 						rIns.setInstructionTransferType(0);
+						rIns.setInstructionNode(instruction.getInstructionNode());
 						node.l1Controller.queueL1CtoBusRequest.enqueue(instruction);
 						node.l1Controller.setState(instruction.getAddress().getAddress(), "WrBuswaitd");
 						System.out
@@ -449,12 +594,14 @@ public class MainClass extends CommonImpl {
 
 	private static HashMap<Instruction, String> checkPresence(Instruction instruction, int block) {
 		if (instruction.getInstructionNode() == 1) {
-			System.out.println(instruction.getBusRequest() + "activated on bus, node2,3 notified: Node - "
+			System.out.println(instruction.getBusRequest() + "activated on bus, node2,3 verify: Node - "
 					+ instruction.getInstructionNode() + " ins:" + instruction.getCommand());
-			if (node2.l1Controller.isL1Hit(instruction.address)) {
-
+			if (node1.l1Controller.isL1Hit(instruction.address)) {
+				System.out.println("hit in  node1 L1");
+			} else if (node2.l1Controller.isL1Hit(instruction.address)) {
+				System.out.println("hit in  node2 L1");
 			} else if (node3.l1Controller.isL1Hit(instruction.address)) {
-
+				System.out.println("hit in  node3 L1");
 			} else {
 				bus.queueBustoMemory.enqueue(instruction);
 				bus.queueAckFromPeers.enqueueStr("Invalid");
@@ -463,12 +610,14 @@ public class MainClass extends CommonImpl {
 				// send invalid
 			}
 		} else if (instruction.getInstructionNode() == 2) {
-			System.out.println(instruction.getBusRequest() + " activated on bus, node1,3 notified: Node - "
+			System.out.println(instruction.getBusRequest() + " activated on bus, node1,3 verify: Node - "
 					+ instruction.getInstructionNode() + " ins:" + instruction.getCommand());
-			if (node1.l1Controller.isL1Hit(instruction.address)) {
-
+			if (node2.l1Controller.isL1Hit(instruction.address)) {
+				System.out.println("hit in  node2 L1");
+			} else if (node1.l1Controller.isL1Hit(instruction.address)) {
+				System.out.println("hit in  node1 L1");
 			} else if (node3.l1Controller.isL1Hit(instruction.address)) {
-
+				System.out.println("hit in  node3 L1");
 			} else {
 				bus.queueBustoMemory.enqueue(instruction);
 				bus.queueAckFromPeers.enqueueStr("Invalid");
@@ -477,12 +626,14 @@ public class MainClass extends CommonImpl {
 				// send invalid
 			}
 		} else if (instruction.getInstructionNode() == 3) {
-			System.out.println(instruction.getBusRequest() + " activated on bus, node1,2 notified: Node - "
+			System.out.println(instruction.getBusRequest() + " activated on bus, node1,2 verify: Node - "
 					+ instruction.getInstructionNode() + " ins:" + instruction.getCommand());
-			if (node1.l1Controller.isL1Hit(instruction.address)) {
-
+			if (node3.l1Controller.isL1Hit(instruction.address)) {
+				System.out.println("hit in  node3 L1");
+			} else if (node1.l1Controller.isL1Hit(instruction.address)) {
+				System.out.println("hit in  node1 L1");
 			} else if (node2.l1Controller.isL1Hit(instruction.address)) {
-
+				System.out.println("hit in  node2 L1");
 			} else {
 				bus.queueBustoMemory.enqueue(instruction);
 				bus.queueAckFromPeers.enqueueStr("Invalid");

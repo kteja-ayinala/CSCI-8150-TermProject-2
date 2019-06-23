@@ -16,16 +16,18 @@ public class Node {
 	int nodeNum;
 
 	public Node(String input, int i) throws IOException {
+		nodeNum = i;
+
 		processor = new Processor(input);
 		l1Controller = new L1Controller();
-		nodeNum = i;
 		System.out.println("Node" + i + ": invoked");
 	}
 
 	public boolean areQueuesEmpty() {
 		if (processor.queueProcessor.isEmpty() && l1Controller.queueL1CtoL1D.isEmpty()
 				&& l1Controller.queueL1CtoBusRequest.isEmpty() && l1Controller.queueBustoL1C.isEmpty()
-				&& l1Controller.queueL1CtoProcessor.isEmpty() && l1Controller.queueProcessortoL1C.isEmpty()) {
+				&& l1Controller.queueL1CtoProcessor.isEmpty() && l1Controller.queueProcessortoL1C.isEmpty()
+				&& processor.queueL1CtoProcessor.isEmpty()) {
 			return true;
 		}
 		return false;

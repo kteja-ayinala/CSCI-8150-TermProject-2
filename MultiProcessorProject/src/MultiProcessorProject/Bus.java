@@ -43,4 +43,8 @@ public class Bus {
 		state.put(address, string);
 
 	}
+	
+	public void clear(int address) {
+		state.remove(address);
+	}
 }
