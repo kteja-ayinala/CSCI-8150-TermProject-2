@@ -27,7 +27,7 @@ public class Node {
 		if (processor.queueProcessor.isEmpty() && l1Controller.queueL1CtoL1D.isEmpty()
 				&& l1Controller.queueL1CtoBusRequest.isEmpty() && l1Controller.queueBustoL1C.isEmpty()
 				&& l1Controller.queueL1CtoProcessor.isEmpty() && l1Controller.queueProcessortoL1C.isEmpty()
-				&& processor.queueL1CtoProcessor.isEmpty()) {
+				&& processor.queueL1CtoProcessor.isEmpty() && l1Controller.l1Data.queueL1CtoL1D.isEmpty()) {
 			return true;
 		}
 		return false;
