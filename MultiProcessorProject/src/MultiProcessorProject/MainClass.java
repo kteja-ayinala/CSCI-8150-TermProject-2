@@ -32,8 +32,8 @@ public class MainClass extends CommonImpl {
 	// static String scheduledNodeKey ;
 
 	public static void main(String[] args) throws IOException {
-		// System.setOut(new PrintStream(new FileOutputStream(curDir +
-		// "/src/MultiProcessorProject/trace.txt")));
+//		 System.setOut(new PrintStream(new FileOutputStream(curDir +
+//		 "/src/MultiProcessorProject/trace.txt")));
 		node1 = new Node("/src/testcases/testcasenode1.txt", 1);
 		node2 = new Node("/src/testcases/testcasenode2.txt", 2);
 		node3 = new Node("/src/testcases/testcasenode3.txt", 3);
@@ -550,6 +550,17 @@ public class MainClass extends CommonImpl {
 					bus.queueBusResponse.enqueue(instruction);
 					node1.l1Controller.setState(instruction.getAddress().getAddress(), "WriteBack");
 				}
+//				if(node2.l1Controller.getMESI() == 'S'){
+//					if (busReqIns != null && busReqIns.getAddress().getAddress() == instruction.getAddress().getAddress()) {
+//						node1.l1Controller.queueBustoL1C.enqueue(busReqIns);
+//						node1.l1Controller.setMESI('S');
+//						node2.l1Controller.setMESI('S');
+//						System.out.println("BusResponse to  L1C - node: " + instruction.getInstructionNode() + ", "
+//								+ busReqIns.getInstructionNode() + " MESI state: M " + " ins:" + instruction.getCommand());
+//						busInProcess = false;
+////						busReqIns = null;
+//					}
+//				}
 			} else if (node3.l1Controller.isL1Hit(instruction.address)) {
 				System.out.println("hit in  node3 L1");
 			} else {
